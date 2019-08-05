@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([msxrom2vhd], [1.0], [robertomartinezp@gmail.com], [msxrom2vhd], [https://github.com/nilp0inter/msxrom2vhd])
+AC_INIT([msxrom2vhd], [1.1], [robertomartinezp@gmail.com], [msxrom2vhd], [https://github.com/nilp0inter/msxrom2vhd])
 
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
