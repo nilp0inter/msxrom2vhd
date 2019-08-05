@@ -3,13 +3,23 @@
 Convert MSX rom files into autolaunch VHD images for MiSTer.
 
 
+Dependencies
+============
+
+* `libguestfs`
+* A C compiler.
+
+
 Installation
 ============
 
-You need `autotools` and `libguestfs` installed in your system.
+Download the latest [release](https://github.com/nilp0inter/msxrom2vhd/releases) and run:
 
 ```
-./autoconf.sh && ./configure && make && sudo make install
+$ tar -zxvf msxrom2vhd-?.?.tar.gz
+$ cd msxrom2vhd
+$ ./configure && make
+$ sudo make install
 ```
 
 
@@ -18,6 +28,16 @@ Usage
 
 ```
 Usage: msxrom2vhd <input.rom> <output.vhd>
+```
+
+
+Development
+===========
+
+For development you also need `autotools`.
+
+```
+./autoconf.sh && ./configure && make
 ```
 
 Acknowledgements
