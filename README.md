@@ -6,7 +6,7 @@ Convert MSX rom files into autolaunch VHD images for MiSTer.
 Installation
 ============
 
-You need `libguestfs` installed in your system.
+You need `autotools` and `libguestfs` installed in your system.
 
 ```
 ./autoconf.sh && ./configure && make && sudo make install

@@ -5,17 +5,17 @@
 #include <stdlib.h>
 #include <config.h>
 
-extern unsigned char *static_AUTOEXEC_BAT;
+extern unsigned char static_AUTOEXEC_BAT[];
 extern unsigned int static_AUTOEXEC_BAT_len;
-extern unsigned char *static_COMMAND2_COM;
+extern unsigned char static_COMMAND2_COM[];
 extern unsigned int static_COMMAND2_COM_len;
-extern unsigned char *static_execrom_com;
+extern unsigned char static_execrom_com[];
 extern unsigned int static_execrom_com_len;
-extern unsigned char *static_MSXDOS2_SYS;
+extern unsigned char static_MSXDOS2_SYS[];
 extern unsigned int static_MSXDOS2_SYS_len;
-extern unsigned char *static_NEXTOR_SYS;
+extern unsigned char static_NEXTOR_SYS[];
 extern unsigned int static_NEXTOR_SYS_len;
-extern unsigned char *static_OCM_BIOS_DAT;
+extern unsigned char static_OCM_BIOS_DAT[];
 extern unsigned int static_OCM_BIOS_DAT_len;
 
 const size_t fs_size = 159040;
