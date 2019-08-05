@@ -18,9 +18,10 @@ extern unsigned int static_NEXTOR_SYS_len;
 extern unsigned char static_OCM_BIOS_DAT[];
 extern unsigned int static_OCM_BIOS_DAT_len;
 
-const size_t fs_size = 159040;
+const size_t fs_size = 156109;
 
 int main(int argc, char *argv[]) {
+	setbuf(stdout, NULL);
 
 	size_t system_size = (static_OCM_BIOS_DAT_len
 			      + static_MSXDOS2_SYS_len
@@ -39,55 +40,75 @@ int main(int argc, char *argv[]) {
 	stat(argv[1], &st);
 	size_t rom_size = st.st_size;
 
-	printf("filesystem: %ld\n", fs_size);
-	printf("system: %ld\n", system_size);
-	printf("user: %ld\n", rom_size);
+	guestfs_h *g = guestfs_create();
+	if (g == NULL) {
+		perror("failed to create libguestfs handle");
+		exit(EXIT_FAILURE);
+	}
 
-	guestfs_h *g = guestfs_create ();
-	guestfs_disk_create (g, argv[2], "raw", fs_size + system_size + rom_size, -1);
-	guestfs_add_drive_opts (g, argv[2],
-			        GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw",
-				-1);
-	guestfs_launch (g);
-	guestfs_part_disk (g, "/dev/sda", "mbr");
-	guestfs_mkfs(g, "fat", "/dev/sda1");
-	guestfs_mount (g, "/dev/sda1", "/");
+	printf("Creating .VHD file (fs: %ld, sys: %ld, user: %ld)... ", fs_size, system_size, rom_size);
+	if (guestfs_disk_create(g, argv[2], "raw", fs_size + system_size + rom_size, -1) == -1)
+		exit(EXIT_FAILURE);
+	if (guestfs_add_drive_opts(g, argv[2], GUESTFS_ADD_DRIVE_OPTS_FORMAT, "raw", -1) == -1)
+		exit(EXIT_FAILURE);
+	printf("OK\n");
 
+	printf("Partitioning... ");
+	if (guestfs_launch(g) == -1)
+		exit(EXIT_FAILURE);
+	if (guestfs_part_disk(g, "/dev/sda", "mbr") == -1)
+		exit(EXIT_FAILURE);
+	printf("OK\n");
+
+	printf("Formatting... ");
+	if (guestfs_mkfs(g, "fat", "/dev/sda1") == -1)
+		exit(EXIT_FAILURE);
+	printf("OK\n");
+
+	printf("Mounting... ");
+	if (guestfs_mount(g, "/dev/sda1", "/") == -1)
+		exit(EXIT_FAILURE);
+	printf("OK\n");
+
+	printf("Copying files... ");
 	/* BIOS */
-	printf("Copying BIOS...\n");
-	guestfs_write (g, "/OCM-BIOS.DAT",
-		       static_OCM_BIOS_DAT,
-		       static_OCM_BIOS_DAT_len);
+	printf("BIOS");
+	if (guestfs_write(g, "/OCM-BIOS.DAT", static_OCM_BIOS_DAT, static_OCM_BIOS_DAT_len) == -1)
+		exit(EXIT_FAILURE);
 
 	/* OS */
-	printf("Copying OS...\n");
-	guestfs_write (g, "/MSXDOS2.SYS",
-		       static_MSXDOS2_SYS,
-		       static_MSXDOS2_SYS_len);
+	printf(" OS");
+	if (guestfs_write(g, "/MSXDOS2.SYS", static_MSXDOS2_SYS, static_MSXDOS2_SYS_len) == -1)
+		exit(EXIT_FAILURE);
 
-	guestfs_write (g, "/NEXTOR.SYS",
-		       static_NEXTOR_SYS,
-		       static_NEXTOR_SYS_len);
+	if (guestfs_write(g, "/NEXTOR.SYS", static_NEXTOR_SYS, static_NEXTOR_SYS_len) == -1)
+		exit(EXIT_FAILURE);
 
-	guestfs_write (g, "/COMMAND2.COM",
-		       static_COMMAND2_COM,
-		       static_COMMAND2_COM_len);
+	if (guestfs_write(g, "/COMMAND2.COM", static_COMMAND2_COM, static_COMMAND2_COM_len) == -1)
+		exit(EXIT_FAILURE);
 
 	/* ROM LOADER */
-	printf("Copying loader...\n");
-	guestfs_write (g, "/EXECROM.COM",
-		       static_execrom_com,
-		       static_execrom_com_len);
+	printf(" LOADER");
+	if (guestfs_write(g, "/EXECROM.COM", static_execrom_com, static_execrom_com_len) == -1)
+		exit(EXIT_FAILURE);
 
-	guestfs_write (g, "/AUTOEXEC.BAT",
-		       static_AUTOEXEC_BAT,
-		       static_AUTOEXEC_BAT_len);
+	if (guestfs_write(g, "/AUTOEXEC.BAT", static_AUTOEXEC_BAT, static_AUTOEXEC_BAT_len) == -1)
+		exit(EXIT_FAILURE);
 
 	/* ROM */
-	printf("Copying rom...\n");
-	guestfs_upload (g, argv[1], "/USER.ROM");
+	printf(" ROM");
+	if (guestfs_upload(g, argv[1], "/USER.ROM") == -1)
+		exit(EXIT_FAILURE);
+	printf("\n");
 
-	guestfs_umount (g, "/");
-	guestfs_shutdown (g);
-	guestfs_close (g);
+	printf("Unmounting... ");
+	if (guestfs_umount(g, "/") == -1)
+		exit(EXIT_FAILURE);
+	printf("OK\n");
+
+	if (guestfs_shutdown(g) == -1)
+		exit(EXIT_FAILURE);
+
+	guestfs_close(g);
+	exit(EXIT_SUCCESS);
 }
