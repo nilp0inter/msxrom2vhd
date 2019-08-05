@@ -9,7 +9,7 @@ Installation
 You need `libguestfs` installed in your system.
 
 ```
-make clean && make
+./autoconf.sh && ./configure && make && sudo make install
 ```
 
 
@@ -17,7 +17,7 @@ Usage
 =====
 
 ```
-Usage: ./msxrom2vhd <input.rom> <output.vhd>
+Usage: msxrom2vhd <input.rom> <output.vhd>
 ```
 
 Acknowledgements
