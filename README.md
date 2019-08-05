@@ -1,6 +1,6 @@
 # msxrom2vhd
 
-Convert MSX rom files into autolaunch VHD images for MiSTer.
+Convert MSX rom files into bootable VHD images for MiSTer.
 
 
 Dependencies
