@@ -17,7 +17,7 @@ Download the latest [release](https://github.com/nilp0inter/msxrom2vhd/releases)
 
 ```
 $ tar -zxvf msxrom2vhd-?.?.tar.gz
-$ cd msxrom2vhd
+$ cd msxrom2vhd-?.?
 $ ./configure && make
 $ sudo make install
 ```
