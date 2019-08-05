@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <config.h>
 
 extern unsigned char *static_AUTOEXEC_BAT;
 extern unsigned int static_AUTOEXEC_BAT_len;
@@ -29,6 +30,7 @@ int main(int argc, char *argv[]) {
 			      + static_AUTOEXEC_BAT_len);
 
 	if (argc != 3) {
+		printf("%s ( %s )\n", PACKAGE_STRING, PACKAGE_URL);
 		printf("Usage: %s <input.rom> <output.vhd>\n", argv[0]);
 		exit(1);
 	}
