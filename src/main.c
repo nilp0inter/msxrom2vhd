@@ -4,18 +4,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ocmbiosdat.h"
-
-#include "msxdos2sys.h"
-#include "nextorsys.h"
-#include "command2com.h"
-
-#include "execromcom.h"
-#include "autoexecbat.h"
+extern unsigned char *static_AUTOEXEC_BAT;
+extern unsigned int static_AUTOEXEC_BAT_len;
+extern unsigned char *static_COMMAND2_COM;
+extern unsigned int static_COMMAND2_COM_len;
+extern unsigned char *static_execrom_com;
+extern unsigned int static_execrom_com_len;
+extern unsigned char *static_MSXDOS2_SYS;
+extern unsigned int static_MSXDOS2_SYS_len;
+extern unsigned char *static_NEXTOR_SYS;
+extern unsigned int static_NEXTOR_SYS_len;
+extern unsigned char *static_OCM_BIOS_DAT;
+extern unsigned int static_OCM_BIOS_DAT_len;
 
 const size_t fs_size = 159040;
 
-void main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 
 	size_t system_size = (static_OCM_BIOS_DAT_len
 			      + static_MSXDOS2_SYS_len
@@ -33,9 +37,9 @@ void main(int argc, char *argv[]) {
 	stat(argv[1], &st);
 	size_t rom_size = st.st_size;
 
-	printf("filesystem: %d\n", fs_size);
-	printf("system: %d\n", system_size);
-	printf("user: %d\n", rom_size);
+	printf("filesystem: %ld\n", fs_size);
+	printf("system: %ld\n", system_size);
+	printf("user: %ld\n", rom_size);
 
 	guestfs_h *g = guestfs_create ();
 	guestfs_disk_create (g, argv[2], "raw", fs_size + system_size + rom_size, -1);
