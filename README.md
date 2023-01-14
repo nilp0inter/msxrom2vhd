@@ -50,6 +50,13 @@ For development you also need `autotools`.
 ./autoconf.sh && ./configure && make
 ```
 
+Develop with nix flake
+----------------------
+
+```console
+$ nix develop
+```
+
 Acknowledgements
 ================
 
