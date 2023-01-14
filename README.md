@@ -13,6 +13,10 @@ Dependencies
 Installation
 ============
 
+
+From a release
+--------------
+
 Download the latest [release](https://github.com/nilp0inter/msxrom2vhd/releases) and run:
 
 ```
@@ -22,6 +26,12 @@ $ ./configure && make
 $ sudo make install
 ```
 
+Run from nix flake
+------------------
+
+```console
+$ nix run github:nilp0inter/msxrom2vhd
+```
 
 Usage
 =====
