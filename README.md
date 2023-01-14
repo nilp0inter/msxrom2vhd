@@ -54,4 +54,3 @@ Acknowledgements
 ================
 
 This software contains binary files gathered from https://github.com/MiSTer-devel/MSX_MiSTer/tree/master/Utils/sdcreate.zip as well as `execrom` from https://sourceforge.net/projects/execrom/files/ExecROM%20binaries/1.2c/.
-
