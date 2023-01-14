@@ -26,11 +26,11 @@ $ ./configure && make
 $ sudo make install
 ```
 
-Run from nix flake
+Install from flake
 ------------------
 
 ```console
-$ nix run github:nilp0inter/msxrom2vhd
+$ nix profile install github:nilp0inter/msxrom2vhd
 ```
 
 Usage
@@ -40,6 +40,14 @@ Usage
 Usage: msxrom2vhd <input.rom> <output.vhd>
 ```
 
+Run from nix flake
+------------------
+
+There is no need to install the package first.
+
+```console
+$ nix run github:nilp0inter/msxrom2vhd
+```
 
 Development
 ===========
