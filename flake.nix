@@ -13,7 +13,7 @@
             version = "1.1";
             src = ./.;
             nativeBuildInputs = [ automake autoconf xxd ];
-            buildInputs = [ libguestfs ];
+            buildInputs = [ libguestfs-with-appliance ];
             preConfigure = ''
               ./autoconf.sh
             '';
