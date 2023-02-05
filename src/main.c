@@ -20,6 +20,8 @@ extern unsigned int static_OCM_BIOS_DAT_len;
 
 const size_t fs_size = 156109;
 
+// Given a ROM file, it creates a .VHD file with the ROM and the necessary
+// files to boot into it.
 int main(int argc, char *argv[]) {
 	setbuf(stdout, NULL);
 
