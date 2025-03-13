@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MSX ROM to VHD Converter</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
+  <style>
+    :root { --msx-blue: #0000AA; --msx-dark: #222222; --msx-light: #FFFFFF; }
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+      font-family: "Courier New", monospace;
+      background: var(--msx-blue); color: var(--msx-light);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .container { text-align: center; max-width: 600px; padding: 20px; }
+    .msx-logo { margin-bottom: 1rem; }
+    .title { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .subtitle { font-size: 1rem; margin-bottom: 2rem; }
+    .upload-box {
+      background: var(--msx-dark); border: 4px solid var(--msx-light);
+      padding: 2rem; margin: 1rem 0; cursor: pointer; transition: 0.3s;
+    }
+    .upload-box:hover { border-color: #AAAAAA; }
+    .upload-box.drag-over { background: #333; border-color: #FFF; }
+    .upload-label { display: block; margin-bottom: 1rem; font-size: 1.2rem; }
+    #file-info { margin-top: 1rem; min-height: 24px; }
+    #convert-btn {
+      display: none; background: var(--msx-dark); color: var(--msx-light);
+      border: 2px solid var(--msx-light); padding: 10px 20px;
+      font-size: 1.2rem; cursor: pointer; margin-top: 1.5rem; font-weight: bold;
+      transition: 0.3s;
+    }
+    #convert-btn:hover { background: #333; }
+    footer { margin-top: 2rem; font-size: 0.8rem; }
+    #file-input { display: none; }
+    /* Spinner styles */
+    #spinner {
+      display: none;
+      margin-top: 1rem;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- GitHub Fork Ribbon -->
+  <a class="github-fork-ribbon" href="https://github.com/nilp0inter/msxrom2vhd" 
+     data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
+
+  <div class="container">
+    <div class="msx-logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/MSX-Logo.svg" alt="MSX Logo" width="200">
+    </div>
+    <h1 class="title">MSX ROM to VHD Converter</h1>
+    <p class="subtitle">
+      Converts MSX ROM files to a VHD disk for MiSTer. Drag & drop a file below.
+    </p>
+
+    <!-- Hidden spinner for loading feedback -->
+    <div id="spinner">Processing... Please wait.</div>
+
+    <!-- Set target to hidden iframe -->
+    <form id="upload-form" action="/convert" method="POST" enctype="multipart/form-data" target="download_iframe">
+      <div class="upload-box" id="drop-area">
+        <label class="upload-label">
+          Drag & drop or click to select a ROM
+        </label>
+        <input type="file" id="file-input" name="romFile" accept=".rom,.bin,.mx1,.mx2">
+        <div id="file-info"></div>
+      </div>
+      <button type="submit" id="convert-btn">Convert to VHD</button>
+    </form>
+
+    <!-- Hidden iframe to capture the file download -->
+    <iframe name="download_iframe" id="download_iframe" style="display: none;"></iframe>
+
+    <footer>
+      <a href="https://github.com/sponsors/nilp0inter" target="_blank" 
+         style="color: var(--msx-light); text-decoration: none;">
+         Sponsor this project
+      </a>
+    </footer>
+  </div>
+
+  <script>
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = document.getElementById('file-input');
+    const fileInfo = document.getElementById('file-info');
+    const convertBtn = document.getElementById('convert-btn');
+    const spinner = document.getElementById('spinner');
+    const uploadForm = document.getElementById('upload-form');
+    const downloadIframe = document.getElementById('download_iframe');
+    let fileSelected = false;
+
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, preventDefaults, false);
+      document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    // Highlight drop area
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropArea.addEventListener(eventName, () => dropArea.classList.add('drag-over'), false);
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, () => dropArea.classList.remove('drag-over'), false);
+    });
+
+    // Handle file drop and selection
+    dropArea.addEventListener('drop', e => {
+      const files = e.dataTransfer.files;
+      handleFiles({ target: { files } });
+    }, false);
+    fileInput.addEventListener('change', handleFiles, false);
+    dropArea.addEventListener('click', e => {
+      if (!fileSelected) fileInput.click();
+      e.stopPropagation();
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    function handleFiles(e) {
+      const files = e.target.files;
+      if (files.length > 0) {
+        fileSelected = true;
+        const file = files[0];
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (['rom', 'bin', 'mx1', 'mx2'].includes(ext)) {
+          fileInfo.textContent = `Selected: ${file.name} (${formatFileSize(file.size)})`;
+          convertBtn.style.display = 'inline-block';
+        } else {
+          fileInfo.textContent = 'Invalid file type';
+          convertBtn.style.display = 'none';
+        }
+        setTimeout(() => fileSelected = false, 200);
+      }
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' bytes';
+      else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
+      else return (bytes / 1048576).toFixed(2) + ' MB';
+    }
+
+    // Show spinner on form submission
+    uploadForm.addEventListener('submit', () => {
+      spinner.style.display = 'block';
+      // Optionally disable the convert button here if needed
+    });
+
+    // When the hidden iframe finishes loading (i.e. download is complete or error), hide the spinner
+    downloadIframe.addEventListener('load', () => {
+      spinner.style.display = 'none';
+      // Clear the form fields if necessary
+      fileInput.value = '';
+      fileInfo.textContent = '';
+      convertBtn.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

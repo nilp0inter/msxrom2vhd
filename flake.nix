@@ -18,6 +18,16 @@
             preConfigure = ''
               ./autoconf.sh
             '';
+            meta = {
+              mainProgram = "msxrom2vhd";
+            };
+          };
+          webapp = pkgs.callPackage (import ./webapp) { inherit msxrom2vhd; };
+          docker = pkgs.dockerTools.buildImage {
+            name = "msxrom2vhd-web";
+            config = {
+              Cmd = [ "${webapp}/bin/start-server" ];
+            };
           };
         };
         defaultPackage = packages.msxrom2vhd;
