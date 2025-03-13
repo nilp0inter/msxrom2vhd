@@ -18,7 +18,7 @@ extern unsigned int static_NEXTOR_SYS_len;
 extern unsigned char static_OCM_BIOS_DAT[];
 extern unsigned int static_OCM_BIOS_DAT_len;
 
-const size_t fs_size = 156109;
+const size_t fs_size = 156621;
 
 // Given a ROM file, it creates a .VHD file with the ROM and the necessary
 // files to boot into it.
