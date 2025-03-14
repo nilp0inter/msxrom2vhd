@@ -56,4 +56,4 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@9c5864eab7354d2e132307e685a2272655932799  #v2.7.3
         with:
           service: msxrom2vhd-web
-          image: ${{ needs.publish.outputs.image }}
+          image: us-central1-docker.pkg.dev/msxrom2vhd/ghcr/nilp0inter/msxrom2vhd:${{ github.ref_name }}
